@@ -11,10 +11,32 @@ public class AnimationScript : MonoBehaviour
     private NetworkStream stream;
 
     void Start()
+{
+    // Check if the client and stream are already initialized
+    if (client != null && client.Connected)
+    {
+        stream.Close();
+        client.Close();
+    }
+
+    // Proceed with connecting to the server
+    try
     {
         client = new TcpClient("localhost", 8080);
         stream = client.GetStream();
+        Debug.Log("Connected to Python server.");
     }
+    catch (SocketException ex)
+    {
+        Debug.LogError("SocketException: " + ex.Message);
+    }
+    catch (Exception ex)
+    {
+        Debug.LogError("Exception: " + ex.Message);
+    }
+}
+
+
     
     
     void Update()
@@ -38,10 +60,17 @@ public class AnimationScript : MonoBehaviour
         }
     }
 
-    void OnApplicationQuit()
+   void OnApplicationQuit()
+{
+    // Ensure the stream and client are closed when Unity quits
+    if (stream != null)
     {
-        // Close the socket when Unity quits
         stream.Close();
+    }
+
+    if (client != null)
+    {
         client.Close();
     }
+}
 }

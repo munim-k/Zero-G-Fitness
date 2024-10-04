@@ -1,54 +1,49 @@
 using System.Diagnostics;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 public class RunPythonScript : MonoBehaviour
 {
-    private Process pythonProcess;
-    
-    
-    private void Start()
+    private Process process; // Store the process reference
+
+    void Start()
     {
-        StartPythonScript();
-    }
-    public void StartPythonScript()
-    {
-        // Path to the Python interpreter
-        string pythonInterpreterPath = @"C:\Users\Tech Mehal\AppData\Local\Microsoft\WindowsApps\python.exe";
-
-        // Path to the Python script
-        string pythonScriptPath = @"/../computervision.py";
-
-        // Configure the process start info
-        ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.FileName = pythonInterpreterPath;
-        startInfo.Arguments = pythonScriptPath;
-        startInfo.UseShellExecute = false;
-        startInfo.RedirectStandardOutput = true;
-        startInfo.RedirectStandardError = true;
-        startInfo.CreateNoWindow = true;
-
-        // Start the Python process
-        pythonProcess = new Process();
-        pythonProcess.StartInfo = startInfo;
-        Debug.Log(pythonProcess.Id);
-
-        pythonProcess.Start();
-        pythonProcess.BeginOutputReadLine();
-        pythonProcess.BeginErrorReadLine();
-    }
-    
-    public void StopPythonScript()
-    {
-        if (pythonProcess != null && !pythonProcess.HasExited)
+        var runningProcesses = Process.GetProcessesByName("python"); // Change to match your Python executable name
+        foreach (var runningProcess in runningProcesses)
         {
-            pythonProcess.Kill();
-            pythonProcess.WaitForExit();
+            runningProcess.Kill(); // Kill any existing Python processes
         }
+
+
+        // Command to execute
+        string command = "python computervision.py"; // Replace with your command
+
+        ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", "/C " + command)
+        {
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            WorkingDirectory = @"C:\Zero-G-Fitness" // Set the working directory
+        };
+
+        process = Process.Start(processInfo); // Start the process and store the reference
+
+        // Optionally, you can read the output from the command
+        string output = process.StandardOutput.ReadToEnd();
+        UnityEngine.Debug.Log(output); // Log the output if needed
+        process.WaitForExit(); // Optional: Wait for the command to finish
     }
 
-    private void OnApplicationQuit()
+    void OnDestroy()
+{
+    // Ensure the process is killed when this script is destroyed
+    if (process != null)
     {
-        StopPythonScript();
+        if (!process.HasExited)
+        {
+            process.Kill();
+        }
+        process.Dispose(); // Dispose of the process resources
     }
+}
+
 }
