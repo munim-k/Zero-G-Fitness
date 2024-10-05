@@ -1,49 +1,90 @@
-using System.Diagnostics;
+using System.Diagnostics; // For Process class
 using UnityEngine;
 
 public class RunPythonScript : MonoBehaviour
 {
-    private Process process; // Store the process reference
+    private Process pythonProcess;
 
     void Start()
     {
-        var runningProcesses = Process.GetProcessesByName("python"); // Change to match your Python executable name
-        foreach (var runningProcess in runningProcesses)
+        StartPythonScript();
+    }
+
+    public void StartPythonScript()
+    {
+        // Ensure the system's default Python interpreter is used
+        ProcessStartInfo startInfo = new ProcessStartInfo
         {
-            runningProcess.Kill(); // Kill any existing Python processes
-        }
-
-
-        // Command to execute
-        string command = "python computervision.py"; // Replace with your command
-
-        ProcessStartInfo processInfo = new ProcessStartInfo("cmd.exe", "/C " + command)
-        {
-            RedirectStandardOutput = true,
+            FileName = "python",  // Use 'python' directly, assuming it is in the system's PATH
+            Arguments = $"\"{Application.dataPath}/../computervision.py\"",  // Enclose in quotes for paths with spaces
             UseShellExecute = false,
-            CreateNoWindow = true,
-            WorkingDirectory = @"C:\Zero-G-Fitness" // Set the working directory
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true
         };
 
-        process = Process.Start(processInfo); // Start the process and store the reference
-
-        // Optionally, you can read the output from the command
-        string output = process.StandardOutput.ReadToEnd();
-        UnityEngine.Debug.Log(output); // Log the output if needed
-        process.WaitForExit(); // Optional: Wait for the command to finish
-    }
-
-    void OnDestroy()
-{
-    // Ensure the process is killed when this script is destroyed
-    if (process != null)
-    {
-        if (!process.HasExited)
+        pythonProcess = new Process();
+        pythonProcess.StartInfo = startInfo;
+        pythonProcess.OutputDataReceived += (sender, args) =>
         {
-            process.Kill();
-        }
-        process.Dispose(); // Dispose of the process resources
-    }
-}
+            if (!string.IsNullOrEmpty(args.Data))
+            {
+                UnityEngine.Debug.Log(args.Data); // Log standard output
+            }
+        };
+        pythonProcess.ErrorDataReceived += (sender, args) =>
+        {
+            if (!string.IsNullOrEmpty(args.Data))
+            {
+                UnityEngine.Debug.LogError(args.Data); // Log standard error
+            }
+        };
 
+        try
+        {
+            pythonProcess.Start();
+            pythonProcess.BeginOutputReadLine();
+            pythonProcess.BeginErrorReadLine();
+            UnityEngine.Debug.Log("Python script started successfully.");
+        }
+        catch (System.Exception ex)
+        {
+            UnityEngine.Debug.LogError($"Failed to start Python script: {ex.Message}"); // Log error on start failure
+            return; // Exit the method to avoid null reference errors
+        }
+
+        // Optionally, you may want to set an event handler to ensure cleanup on exit
+        pythonProcess.Exited += (sender, args) =>
+        {
+            UnityEngine.Debug.Log("Python script has exited.");
+            StopPythonScript(); // Ensure we clean up if the script exits
+        };
+    }
+
+    public void StopPythonScript()
+    {
+        if (pythonProcess != null && !pythonProcess.HasExited)
+        {
+            try
+            {
+                pythonProcess.Kill();
+                pythonProcess.WaitForExit();
+                UnityEngine.Debug.Log("Python script stopped successfully.");
+            }
+            catch (System.Exception ex)
+            {
+                UnityEngine.Debug.LogError($"Failed to stop Python script: {ex.Message}"); // Log error on stop failure
+            }
+            finally
+            {
+                pythonProcess.Dispose(); // Dispose process resources
+                pythonProcess = null; // Set to null to avoid potential null reference issues
+            }
+        }
+    }
+
+    void OnApplicationQuit()
+    {
+        StopPythonScript(); // Ensure the Python script is stopped when the application quits
+    }
 }
