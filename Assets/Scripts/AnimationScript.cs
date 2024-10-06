@@ -7,6 +7,8 @@ using System.Collections;
 public class AnimationScript : MonoBehaviour
 {
     public Transform[] bodyJoints; // Assign body joints in the Unity Inspector
+
+    public float lerpSpeed=1f;
     private TcpClient client;
     private NetworkStream stream;
     private byte[] buffer = new byte[1024];
@@ -81,7 +83,8 @@ public class AnimationScript : MonoBehaviour
                         float.TryParse(poseValues[i * 3 + 1], out float y) &&
                         float.TryParse(poseValues[i * 3 + 2], out float z))
                     {
-                        bodyJoints[i].localPosition = new Vector3(x / 100f, y / 100f, z / 100f);
+                        bodyJoints[i].localPosition = Vector3.Lerp(bodyJoints[i].localPosition, new Vector3(x / 100f, y / 100f, z / 100f), Time.deltaTime * lerpSpeed);
+                        //bodyJoints[i].localPosition = new Vector3(x / 100f, y / 100f, z / 100f);
                     }
                 }
             }

@@ -13,10 +13,7 @@ public class CubeMover : MonoBehaviour
 
      private GameObject leftHand;   // Reference to player's left hand
     private GameObject rightHand;
-    private int randomIndex;
-
-    private int[] randomIndexArray;
-
+  
     void Start()
     {
         leftHand= GameObject.FindWithTag("left");
@@ -29,7 +26,6 @@ public class CubeMover : MonoBehaviour
     }
     public void Initialize(Transform _face, Material _material)
     {
-        randomIndex = Random.Range(0, 3);
        face = _face;
        direction.z = (face.position.z - transform.position.z);
        redmaterial = _material;

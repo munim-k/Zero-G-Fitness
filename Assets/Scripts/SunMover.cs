@@ -6,15 +6,14 @@ public class SunMover : MonoBehaviour
 {
     public Transform playerHead;    // Reference to the player's head (target)
     public float speed = 5.0f;      // Movement speed towards the player head
-    public float boundaryDistance = 25.0f; // Boundary distance to destroy object when out of bounds
-    
+    public float boundaryDistance = 70.0f; // Boundary distance to destroy object when out of bounds
     private Vector3 direction;      // Direction towards the player's head
 
-    public void Initialize(Transform _playerHead)
+    public void Initialize(Transform _playerHead,float t)
     {
         Debug.Log(_playerHead.transform.position);
         playerHead = _playerHead;
-        direction = (playerHead.position - transform.position).normalized;
+        direction = (playerHead.position+new Vector3(0,t,0)  - transform.position).normalized;
     }
 
     void Update()
@@ -28,4 +27,6 @@ public class SunMover : MonoBehaviour
             Destroy(gameObject);  // Destroy the object if it's too far from the player's head
         }
     }
+
+    
 }

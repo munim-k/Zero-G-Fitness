@@ -9,6 +9,7 @@ public class SunSquatScript : MonoBehaviour
     [SerializeField] private GameObject camera;
 
     private GameObject newSun;
+    public float verticalOffset = 50f;   
     // Right foot reference
     
     // To control the random spawn rate
@@ -25,10 +26,9 @@ public class SunSquatScript : MonoBehaviour
         {
             // Calculate the average x position and use Lfoot's y position
             Vector3 spawnPosition = new Vector3(head.transform.position.x, head.transform.position.y, camera.transform.position.z);
-            
             // Instantiate the sun at the calculated position
             newSun = Instantiate(sun, spawnPosition, Quaternion.identity);
-            newSun.AddComponent<SunMover>().Initialize(head.transform);
+            newSun.AddComponent<SunMover>().Initialize(head.transform,verticalOffset);
             
             // Randomize the spawn rate between 1 and 3 seconds
             spawnRate = Random.Range(10.0f, 13.0f);
