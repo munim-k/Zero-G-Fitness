@@ -9,6 +9,7 @@ public class MainMenu : MonoBehaviour
     public void PlayGame()
     {
         SceneManager.LoadSceneAsync(1);
+        Time.timeScale = 1f;    
     }
     public void AboutPage()
     {
@@ -16,9 +17,16 @@ public class MainMenu : MonoBehaviour
     }
     public void MainMenuReturn()
     {
-        SceneManager.LoadSceneAsync(0);
-
+     StartCoroutine(MainMenuReturnCouroutine());    
     }
+
+    IEnumerator MainMenuReturnCouroutine()
+    {
+        Time.timeScale = 1f;
+        yield return new WaitForSeconds(2);
+        SceneManager.LoadSceneAsync(0);
+    }
+
     public void AboutScreen_2()
     {
         SceneManager.LoadSceneAsync(3);

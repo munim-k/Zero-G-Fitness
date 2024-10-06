@@ -95,10 +95,15 @@ public class AnimationScript : MonoBehaviour
         }
     }
 
-    void OnApplicationQuit()
+    public void ClosePythonServer()
     {
         if (stream != null) stream.Close();
         if (client != null) client.Close();
         UnityEngine.Debug.Log("Connection closed.");
+    }
+
+    void OnApplicationQuit()
+    {
+        ClosePythonServer();
     }
 }
