@@ -10,7 +10,7 @@ server_socket.listen(1)  # Listen for one client
 print("Waiting for a connection from Unity...")
 
 # Initialize OpenCV and PoseDetector
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 detector = PoseDetector()
 
 # Wait for a connection from the Unity client
@@ -41,11 +41,9 @@ while True:
                 print(f"Error sending data: {e}")
 
     # Show the real-time feed with pose detection
-    cv2.imshow("Real-Time Pose Detection", img)
+   # cv2.imshow("Real-Time Pose Detection", img)
 
-    key = cv2.waitKey(1)
-    if key == ord('q'):  # Press 'q' to exit
-        break
+    #
 
 cap.release()
 conn.close()
