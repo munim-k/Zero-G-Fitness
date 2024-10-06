@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
+    public GameObject Panel;
     public void PlayGame()
     {
         SceneManager.LoadSceneAsync(1);
@@ -23,5 +24,16 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadSceneAsync(3);
 
     }
+    public void PauseScreen()
+    {
+        Panel.SetActive(true);
+        Time.timeScale = 0;
+    }
+    public void unpauseScreen()
+    {
+        Panel.SetActive(false);
+        Time.timeScale = 1;
+    }
+  
 
 }

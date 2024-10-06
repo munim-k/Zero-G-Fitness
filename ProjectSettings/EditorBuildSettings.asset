@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/About_2.unity
     guid: 5d24a5bfd45ae4e40ae4343cf12927eb
+  - enabled: 0
+    path: Assets/Scenes/Pause Sscreen.unity
+    guid: 33421dcee87d7b44c9b5043734e7271e
   m_configObjects: {}
